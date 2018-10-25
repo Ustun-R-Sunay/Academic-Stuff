@@ -11,8 +11,22 @@ import sympy
 import numpy as np
 
 def SymDiag(H):
-    A = H.eigenvects
-    print(A)
+    #diagonalize Hamiltonian symbolically. 
+    #Other numerical methods were attempted but due to large difference in 
+    #order of magnitude between elements, eigenvectors are unstable.
+    
+    Vals = H.eigenvects 
+    #Get eigenvectors from Vals using list comprehension. MUST NORMALIZE
+    # if eigenvalues are degenerate, then have to pull mutliple eigenvectors out
+    V_0 = np.matrix([i[2][mult]/i[2][mult].norm() for i in Vals for mult in range(i[1])])
+    #Do the same for eigenvalues
+    E_0 = np.array([i[0] for i in Vals for mult in range (i[1])])
+    #sort eigenvalues by magnitude
+    indx_order = np.argsort(E_0)
+    E_0 = E_0[indx_order]
+    V_0 = V_0[indx_order]
+    
+    return V_0, E_0
 
 
 def roadmap(gpar,gperp,angles,offset_angle):
@@ -50,7 +64,7 @@ def GetStates(H):
     #some elements of H are very small and when diagonalization occurs,
     # you get incorrect eigenvectors. To fix this, multiply by a factor
     #E_0,V_0 = SymDiag(sympy.Matrix(H))
-    factor = 1000
+    factor = 100
     H = H*factor
     
     E_0,V_0 = np.linalg.eig(H)
