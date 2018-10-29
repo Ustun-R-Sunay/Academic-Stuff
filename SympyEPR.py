@@ -6,6 +6,7 @@ Created on Wed Oct 24 15:39:56 2018
 """
 
 # -*- coding: utf-8 -*-
+import timeit
 
 import sympy
 import numpy as np
@@ -14,18 +15,21 @@ def SymDiag(H):
     #diagonalize Hamiltonian symbolically. 
     #Other numerical methods were attempted but due to large difference in 
     #order of magnitude between elements, eigenvectors are unstable.
-    
+    tic = timeit.default_timer()
+
     Vals = H.eigenvects()
     #Get eigenvectors from Vals using list comprehension. MUST NORMALIZE
     # if eigenvalues are degenerate, then have to pull mutliple eigenvectors out
     V_0 = np.matrix([(i[2][mult]/i[2][mult].norm()) for i in Vals for mult in range(i[1])])
     #Do the same for eigenvalues
-    E_0 = np.array([sympy.re(i[0]) for i in Vals for mult in range (i[1])])
+    E_0 = np.array([float(sympy.re(i[0])) for i in Vals for mult in range (i[1])])
+    toc = timeit.default_timer()
+
     #sort eigenvalues by magnitude
     indx_order = np.argsort(E_0)
     E_0 = E_0[indx_order]
     V_0 = V_0[indx_order]
-    
+    print(toc-tic)
     return V_0, E_0
 
 
