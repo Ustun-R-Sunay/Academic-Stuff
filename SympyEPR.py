@@ -6,6 +6,11 @@ Created on Wed Oct 24 15:39:56 2018
 """
 
 # -*- coding: utf-8 -*-
+# program used to Determine and diagonalize Hamiltonian with 
+# negative axial crystal field and 2p orbitals. The negative crystal field
+#gives rise to an orbital degenerate ground state, requiring the calculated
+# g-factor to be handled with first-order degenerate perturbation theory.
+# 
 import timeit
 
 import sympy
@@ -13,6 +18,8 @@ import numpy as np
 
 def SymDiag(H):
     #diagonalize Hamiltonian symbolically. 
+    #I imagine that this solution is like destroying an anthill with a nuclear
+    #missle, but it does work. Currently looking into more time-effe
     #Other numerical methods were attempted but due to large difference in 
     #order of magnitude between elements, eigenvectors are unstable.
     tic = timeit.default_timer()
@@ -20,7 +27,7 @@ def SymDiag(H):
     Vals = H.eigenvects()
     #Get eigenvectors from Vals using list comprehension. MUST NORMALIZE
     # if eigenvalues are degenerate, then have to pull mutliple eigenvectors out
-    V_0 = np.matrix([(i[2][mult]/i[2][mult].norm()) for i in Vals for mult in range(i[1])])
+    V_0 = np.matrix([i[2][mult]/i[2][mult].norm() for i in Vals for mult in range(i[1])])
     #Do the same for eigenvalues
     E_0 = np.array([float(sympy.re(i[0])) for i in Vals for mult in range (i[1])])
     toc = timeit.default_timer()
@@ -85,17 +92,23 @@ def GetGValuesDeg(wfa,wfb,gl):
     #calculates g-factors when ground state is orbitally degenerate.
     ge = 2.002319 #electron free g-factor value
     #The expressions can be simplified, but it is important to have physics be "readable"
-    gx = 2*abs((wfb[0,0]*(gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,1]))+ wfb[0,1]*(gl*wfa[0,5]/np.sqrt(2)+ge*0.5*wfa[0,0]) + \
-               wfb[0,2]*(gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,3]) + wfb[0,3]*(gl*wfa[0,5]/np.sqrt(2)+ge*0.5*wfa[0,2]) + \
-               wfb[0,4]*(gl*(wfa[0,0]+wfa[0,2])/np.sqrt(2)+ge*0.5*wfa[0,5]) + wfb[0,5]*(gl*(wfa[0,1]+wfa[0,3])/np.sqrt(2)+ge*0.5*wfa[0,4]))
+    gx = 2*abs((np.conj(wfb[0,0])*(gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,1]))+ np.conj(wfb[0,1])*(gl*wfa[0,5]/np.sqrt(2)+ge*0.5*wfa[0,0]) + \
+               np.conj(wfb[0,2])*(gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,3]) + np.conj(wfb[0,3])*(gl*wfa[0,5]/np.sqrt(2)+ge*0.5*wfa[0,2]) + \
+               np.conj(wfb[0,4])*(gl*(wfa[0,0]+wfa[0,2])/np.sqrt(2)+ge*0.5*wfa[0,5]) + np.conj(wfb[0,5])*(gl*(wfa[0,1]+wfa[0,3])/np.sqrt(2)+ge*0.5*wfa[0,4]))
     
-    gy = 2*abs(wfb[0,0]*(gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,1]))+ 2*abs(wfb[0,1]*(gl*wfa[0,5]/np.sqrt(2) - ge*0.5*wfa[0,0])) + \
-               2*abs(wfb[0,2]*(-gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,3])) + 2*abs(wfb[0,3]*(-gl*wfa[0,5]/np.sqrt(2) + ge*0.5*wfa[0,2])) + \
-               2*abs(wfb[0,4]*(gl*(wfa[0,0]-wfa[0,2])/np.sqrt(2)-ge*0.5*wfa[0,5])) + 2*abs(wfb[0,5]*(gl*(wfa[0,1]-wfa[0,3])/np.sqrt(2)+ge*0.5*wfa[0,4]))
+    gy = 2*abs(np.conj(wfb[0,0])*(gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,1]) + np.conj(wfb[0,1])*(gl*wfa[0,5]/np.sqrt(2) - ge*0.5*wfa[0,0]) + \
+               np.conj(wfb[0,2])*(-gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,3]) + np.conj(wfb[0,3])*(-gl*wfa[0,5]/np.sqrt(2) + ge*0.5*wfa[0,2]) + \
+               np.conj(wfb[0,4])*(gl*(wfa[0,0]-wfa[0,2])/np.sqrt(2)-ge*0.5*wfa[0,5]) + np.conj(wfb[0,5])*(gl*(wfa[0,1]-wfa[0,3])/np.sqrt(2)+ge*0.5*wfa[0,4]))
     
-    gz = 2*abs(wfb[0,0]*wfb[0,0]*(gl+ge/2)+wfb[0,1]*wfb[0,1]*(gl-ge/2)+wfb[0,2]*wfb[0,2]*(gl+ge/2)+wfb[0,3]*wfb[0,3]*(-gl-ge/2)+ \
-               wfb[0,4]*wfb[0,4]*(-gl-ge/2)+wfb[0,5]*wfb[0,5]*(gl))
+    gz = 2*abs(np.conj(wfb[0,0])*wfb[0,0]*(gl+ge/2) + np.conj(wfb[0,1])*wfb[0,1]*(gl-ge/2) + np.conj(wfb[0,2])*wfb[0,2]*(-gl+ge/2) + np.conj(wfb[0,3])*wfb[0,3]*(-gl-ge/2) + \
+               np.conj(wfb[0,4])*wfb[0,4]*(-gl-ge/2) + np.conj(wfb[0,5])*wfb[0,5]*(gl))
     return gx,gy,gz
-    
+
+def GetGValuesNoDeg(wfa,wfb,gl):
+    ge = 2.002319
+    gx = ge
+    gy = ge
+    gz = ge
+    return gx,gy,gz
 def prWF(wfa,i):
     print(wfa[0,i])
