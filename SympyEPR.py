@@ -97,7 +97,7 @@ def GetGValuesDeg(wfa,wfb,gl):
                np.conj(wfb[0,4])*(gl*(wfa[0,0]+wfa[0,2])/np.sqrt(2)+ge*0.5*wfa[0,5]) + np.conj(wfb[0,5])*(gl*(wfa[0,1]+wfa[0,3])/np.sqrt(2)+ge*0.5*wfa[0,4]))
     
     gy = 2*abs(np.conj(wfb[0,0])*(gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,1]) + np.conj(wfb[0,1])*(gl*wfa[0,5]/np.sqrt(2) - ge*0.5*wfa[0,0]) + \
-               np.conj(wfb[0,2])*(-gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,3]) + np.conj(wfb[0,3])*(-gl*wfa[0,5]/np.sqrt(2) + ge*0.5*wfa[0,2]) + \
+               np.conj(wfb[0,2])*(-gl*wfa[0,4]/np.sqrt(2)+ge*0.5*wfa[0,3]) + np.conj(wfb[0,3])*(-gl*wfa[0,5]/np.sqrt(2) - ge*0.5*wfa[0,2]) + \
                np.conj(wfb[0,4])*(gl*(wfa[0,0]-wfa[0,2])/np.sqrt(2)-ge*0.5*wfa[0,5]) + np.conj(wfb[0,5])*(gl*(wfa[0,1]-wfa[0,3])/np.sqrt(2)+ge*0.5*wfa[0,4]))
     
     gz = 2*abs(np.conj(wfb[0,0])*wfb[0,0]*(gl+ge/2) + np.conj(wfb[0,1])*wfb[0,1]*(gl-ge/2) + np.conj(wfb[0,2])*wfb[0,2]*(-gl+ge/2) + np.conj(wfb[0,3])*wfb[0,3]*(-gl-ge/2) + \
